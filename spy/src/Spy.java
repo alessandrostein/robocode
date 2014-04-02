@@ -1,4 +1,3 @@
-
 import java.awt.Color;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,9 +26,9 @@ public class Spy extends AdvancedRobot {
         // Set colors
         setBodyColor(Color.black);
         setGunColor(Color.black);
-        setRadarColor(Color.GRAY);
-        setBulletColor(Color.cyan);
-        setScanColor(Color.cyan);
+        setRadarColor(Color.black);
+        setBulletColor(Color.black);
+        setScanColor(Color.black);
 
         // Initialize moveAmount to the maximum possible for this battlefield.
         moveAmount = Math.max(getBattleFieldWidth(), getBattleFieldHeight());
