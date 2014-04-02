@@ -136,6 +136,13 @@ public class Spy extends AdvancedRobot {
 
         scan();*/
         
+        double changeInEnergy = previousEnergy - e.getEnergy();
+        if (changeInEnergy > 0 && changeInEnergy <= 3) {
+            // Dodge!
+            movementDirection = -movementDirection;
+            setAhead((e.getDistance() / 4 + 25) + movementDirection);
+        }
+        
         // Para mirar o radar no adversário
         turnRadarRight(angleRelative(e.getBearing()+e.getHeading()-getRadarHeading()));
         // Para mirar o canhão no adverário
@@ -144,7 +151,12 @@ public class Spy extends AdvancedRobot {
         
         // Ajusta mira
         aim(e.getBearing());
-        fire(2);
+        
+        if (e.getEnergy() < 20){
+            fatalShooting(e.getEnergy());
+        }else{
+            shooting(e.getDistance());
+        }
 
     }
 
@@ -187,6 +199,24 @@ public class Spy extends AdvancedRobot {
         
         turnGunRight(adv);
         
+    }
+    
+    // Tiro fatal
+    public void fatalShooting(double energia){
+        double tiro  = (energia/4) +.1;
+        fire(tiro);
+        
+    }
+    
+    // Tiro com economia de energia
+    public void shooting(double distancia){
+        if (distancia > 200 || getEnergy() < 15)
+            fire(1);
+        else
+            if (distancia > 50) 
+                fire (2);
+            else
+                fire(2);
     }
 
 }
