@@ -1,8 +1,11 @@
 
 import java.awt.Color;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import robocode.AdvancedRobot;
 import robocode.HitByBulletEvent;
 import robocode.HitRobotEvent;
+import robocode.HitWallEvent;
 import robocode.ScannedRobotEvent;
 import robocode.SkippedTurnEvent;
 /*
@@ -37,29 +40,93 @@ public class Spy extends AdvancedRobot {
         // Turn the gun to turn right 90 degrees.
         turnGunRight(90);
         turnRight(90);
+        /*
+         while (true) {
+         //scan();
+         //moveAmount = Math.max(getBattleFieldWidth(), getBattleFieldHeight()) - 10;
+         // Move up the wall
+         ahead(moveAmount);
+         // Turn to the next wall
+         turnRight(90);
+         turnGunRight(270);
+
+         back(moveAmount);
+
+         turnLeft(90);
+         turnGunLeft(270);
+
+         scan();
+         }*/
+
+        // Get the radar spinning so we can get ScannedRobotEvents
+        setTurnRadarRightRadians(Double.POSITIVE_INFINITY);
 
         while (true) {
-            //scan();
-            //moveAmount = Math.max(getBattleFieldWidth(), getBattleFieldHeight()) - 10;
-            // Move up the wall
-            ahead(moveAmount);
-            // Turn to the next wall
-            turnRight(90);
-            turnGunRight(270);
+            // Ira se preocupar com o caminho.
+            new Thread(new Runnable() {
 
-            back(moveAmount);
+                @Override
+                public void run() {
+                    ahead(moveAmount);
+                    // Turn to the next wall
+                    turnRight(90);
+                    turnGunRight(90);
 
-            turnLeft(90);
-            turnGunLeft(270);
+                    back(moveAmount);
 
-            //scan();
+                    turnLeft(90);
+                    turnGunLeft(90);
+
+                }
+            }).start();
+
+            // Ira se preocupar com o rastreamento
+            new Thread(new Runnable() {
+
+                @Override
+                public void run() {
+                    //turnGunLeft(360);
+                    scan();
+                    //turnRadarRight(270);
+
+                }
+            }).start();
+
+            /*out.println("Robot time: " + getTime());
+
+             if (threadCount < 5) {
+             final long spawnTime = getTime();
+
+             // Quick and dirty code to create a new thread. If you don't
+             // already know how to do this, you probably haven't learned all
+             // the intricacies involved in multithreading on the JVM yet.
+             new Thread(new Runnable() {
+
+             int runCount = 0;
+
+             public void run() {
+
+             while (token[0] == true && runCount < 100) {
+             System.out.printf(
+             "\tHi from Thread#%d (current time: %d). Repeat count: %d\n",
+             spawnTime, getTime(), ++runCount);
+             try {
+             // Sleep until re-awakened in next turn
+             token.wait();
+             } catch (InterruptedException e) {
+             }
+             }
+             }
+
+             }).start();
+
+             threadCount++;
+
+             }*/
+            execute();
         }
 
     }
-
-    double previousEnergy = 100;
-    int movementDirection = 1;
-    int gunDirection = 1;
 
     @Override
     public void onScannedRobot(ScannedRobotEvent e) {
@@ -79,31 +146,29 @@ public class Spy extends AdvancedRobot {
             shooting(e.getDistance());
         }
 
-        scan();
-        
+        //scan();
+
         ahead(moveAmount - ((moveAmount / 100) + 1));
 
-        scan();
+       // scan();
     }
 
     @Override
     public void onHitByBullet(HitByBulletEvent e) {
         //setTurnRight(100);
         //ahead(Math.random() + 100);
-        
-        turnGunLeft(e.getBearing());
-        
-        scan();
-        
+
+        //turnGunLeft(e.getBearing());
+        //scan();
+
         moveAmount = Math.max(getBattleFieldWidth(), getBattleFieldHeight()) - 10;
         // Move up the wall
         ahead(moveAmount);
         // Turn to the next wall
         turnRight(90);
-        
+
         //turnGunLeft(270);
-        
-        scan();
+        //scan();
 
         back(100);
     }
@@ -117,6 +182,15 @@ public class Spy extends AdvancedRobot {
         else {
             ahead(100);
         }
+
+        //scan();
+    }
+
+    @Override
+    public void onHitWall(HitWallEvent e) {
+        //turnGunRight(360);
+        moveAmount = moveAmount - 10;
+        //scan();
     }
 
     @Override
