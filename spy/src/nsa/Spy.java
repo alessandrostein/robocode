@@ -1,6 +1,6 @@
+package nsa;
+
 import java.awt.Color;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import robocode.AdvancedRobot;
 import robocode.HitByBulletEvent;
 import robocode.HitRobotEvent;
