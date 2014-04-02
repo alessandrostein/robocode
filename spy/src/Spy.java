@@ -6,6 +6,7 @@ import robocode.HitByBulletEvent;
 import robocode.HitRobotEvent;
 import robocode.RadarTurnCompleteCondition;
 import robocode.ScannedRobotEvent;
+import robocode.SkippedTurnEvent;
 import robocode.TurnCompleteCondition;
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -106,7 +107,7 @@ public class Spy extends AdvancedRobot {
 
     @Override
     public void onScannedRobot(ScannedRobotEvent e) {
-        // Stay at right angles to the opponent
+        /* // Stay at right angles to the opponent
         setTurnRight(e.getBearing() + 90 - 30 * movementDirection);
 
         // If the bot has small energy drop,
@@ -133,7 +134,17 @@ public class Spy extends AdvancedRobot {
         // Track the energy level
         previousEnergy = e.getEnergy();
 
-        scan();
+        scan();*/
+        
+        // Para mirar o radar no adversário
+        turnRadarRight(angleRelative(e.getBearing()+e.getHeading()-getRadarHeading()));
+        // Para mirar o canhão no adverário
+        turnGunRight(angleRelative(e.getBearing()+e.getHeading()-getGunHeading()));
+        //
+        
+        // Ajusta mira
+        aim(e.getBearing());
+        fire(2);
 
     }
 
@@ -141,6 +152,41 @@ public class Spy extends AdvancedRobot {
     public void onHitByBullet(HitByBulletEvent e) {
         setTurnRight(100);
         ahead(Math.random() + 100);
+    }
+    
+    @Override
+    // Em caso de ficar um longo tempo sem ação.
+    public void onSkippedTurn(SkippedTurnEvent e){
+        turnGunLeft(360);
+    }
+    
+    // Buscar angulo do oponente.
+    public double angleRelative(double valor){
+        double rel = valor;
+        
+        while   (rel <= -180){
+            rel += 360;
+        }
+        
+        while (valor > 180){
+            rel -= 360;
+        }
+        return valor;
+        
+    }
+    
+    // Ajustar a mira
+    public void aim(double valor){
+        double adv = getHeading() + valor  - getGunHeading();
+        if (!(adv > -180 && adv <= 180)){
+            while (adv <= -180)
+                adv += 360;
+            while (adv > 180)
+                adv -= 360;
+        }
+        
+        turnGunRight(adv);
+        
     }
 
 }
